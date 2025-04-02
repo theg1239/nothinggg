@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { MouseGradient } from "@/components/mouse-gradient";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -18,8 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head></head>
-      <body className="bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 min-h-screen">
+      <body>
         {children}
+        <MouseGradient />
       </body>
     </html>
   );
