@@ -16,13 +16,13 @@ export default function Hero() {
             <div className="space-y-6">
               <div className="inline-flex items-center rounded-full border border-gray-200 bg-white px-3 py-1 text-sm dark:border-gray-800 dark:bg-gray-950">
                 <span className="mr-1 rounded-full bg-teal-600 px-1.5 py-0.5 text-xs font-medium text-white">New</span>
-                <span className="text-gray-700 dark:text-gray-300">Introducing GitConverse MCP</span>
+                <span className="text-gray-700 dark:text-gray-300">Introducing MCPVerse MCP</span>
               </div>
               <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
                 Git Commands in <span className="text-teal-600 dark:text-teal-500">Plain English</span>
               </h1>
               <p className="max-w-[600px] text-gray-600 dark:text-gray-400 md:text-xl">
-                GitConverse translates natural language into Git operations, visualizes repository history, and scales
+                MCPVerse translates natural language into Git operations, visualizes repository history, and scales
                 across multiple applications with our innovative MCP architecture.
               </p>
             </div>
@@ -54,7 +54,7 @@ export default function Hero() {
                   <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
                   <div className="h-3 w-3 rounded-full bg-green-500"></div>
                 </div>
-                <div className="text-xs font-medium text-gray-600 dark:text-gray-400">GitConverse Chat</div>
+                <div className="text-xs font-medium text-gray-600 dark:text-gray-400">MCPVerse Chat</div>
                 <div></div>
               </div>
               <div className="space-y-4 p-4">

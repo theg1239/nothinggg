@@ -49,7 +49,7 @@ export default function Features() {
             Powerful Features for Modern Developers
           </h2>
           <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto">
-            GitConverse combines natural language processing with powerful visualization tools to make Git more
+            MCPVerse combines natural language processing with powerful visualization tools to make Git more
             accessible and insightful.
           </p>
         </div>

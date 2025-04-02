@@ -42,7 +42,7 @@ export default function Applications() {
             Highly Scalable to Multiple Applications
           </h2>
           <p className="mb-16 text-gray-600 dark:text-gray-400 md:text-xl">
-            GitConverse's MCP architecture extends beyond Git to power natural language interfaces for various developer
+            MCPVerse's MCP architecture extends beyond Git to power natural language interfaces for various developer
             tools.
           </p>
         </div>

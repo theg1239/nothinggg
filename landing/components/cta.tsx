@@ -39,7 +39,7 @@ export default function CTA() {
                 Ready to transform your Git workflow?
               </h2>
               <p className="text-gray-400 md:text-lg mb-0">
-                Join thousands of developers who are already saving time and reducing friction with GitConverse.
+                Join thousands of developers who are already saving time and reducing friction with MCPVerse.
               </p>
             </div>
             

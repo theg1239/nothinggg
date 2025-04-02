@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           <div className="md:col-span-1">
             <Link href="/" className="text-white font-bold text-2xl mb-6 inline-block">
-              GitConverse
+              MCPVerse
             </Link>
             <p className="text-gray-400 mb-6">
               Making Git collaboration simple, visual, and intuitive for modern development teams.
@@ -125,7 +125,7 @@ export default function Footer() {
         </div>
         
         <div className="mt-16 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
-          <p>© {new Date().getFullYear()} GitConverse. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} MCPVerse. All rights reserved.</p>
         </div>
       </div>
     </footer>

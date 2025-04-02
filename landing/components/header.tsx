@@ -12,18 +12,15 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md dark:border-gray-800 dark:bg-gray-950/80">
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
-          <div className="relative h-8 w-8 overflow-hidden rounded-full bg-gradient-to-br from-teal-400 to-teal-600">
-            <div className="absolute inset-1 rounded-full bg-white dark:bg-gray-900"></div>
-            <div className="absolute inset-2 rounded-full bg-gradient-to-br from-teal-400 to-teal-600"></div>
-          </div>
-          <span className="text-xl font-bold">GitConverse</span>
+        
+          <span className="text-xl font-bold">MCPVerse</span>
         </Link>
         <div className="hidden md:flex md:items-center md:space-x-4">
           <Button variant="outline" size="sm">
             Log In
           </Button>
           <Button size="sm" className="bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-700">
-            Try GitConverse
+            Try MCPVerse
           </Button>
         </div>
 
@@ -41,34 +38,6 @@ export default function Header() {
       {isMenuOpen && (
         <div className="md:hidden">
           <div className="space-y-1 px-2 pb-3 pt-2">
-            <Link
-              href="#features"
-              className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Features
-            </Link>
-            <Link
-              href="#how-it-works"
-              className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              How It Works
-            </Link>
-            <Link
-              href="#applications"
-              className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Applications
-            </Link>
-            <Link
-              href="#pricing"
-              className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Pricing
-            </Link>
             <div className="mt-4 flex flex-col space-y-2 px-3">
               <Button variant="outline" size="sm" className="w-full justify-center">
                 Log In
@@ -77,7 +46,7 @@ export default function Header() {
                 size="sm"
                 className="w-full justify-center bg-teal-600 hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-700"
               >
-                Try GitConverse
+                Try MCPVerse
               </Button>
             </div>
           </div>

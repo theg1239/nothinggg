@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Github } from "lucide-react"
 
@@ -7,7 +8,14 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 max-w-screen-2xl items-center">
         <Link href="/" className="mr-6 flex items-center space-x-2">
-          <span className="font-bold">Amane Soft</span>
+          <Image 
+            src="/logo.svg" 
+            alt="MCPVerse Logo" 
+            width={32} 
+            height={32} 
+            className="h-8 w-auto"
+          />
+          <span className="font-bold">MCPVerse</span>
         </Link>
         <nav className="flex flex-1 items-center space-x-6 text-sm font-medium">
           <Link href="/solutions" className="transition-colors hover:text-primary">

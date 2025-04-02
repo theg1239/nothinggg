@@ -6,7 +6,7 @@ import { ChevronRight } from "lucide-react"
 const steps = [
   {
     title: "Connect to your repository",
-    description: "Link GitConverse to your GitHub or GitLab repository with a simple authentication flow.",
+    description: "Link MCPVerse to your GitHub or GitLab repository with a simple authentication flow.",
     code: "$ git converse connect my-awesome-project",
   },
   {
@@ -16,7 +16,7 @@ const steps = [
   },
   {
     title: "Review and confirm actions",
-    description: "GitConverse shows what it's about to do and lets you confirm before making any changes.",
+    description: "MCPVerse shows what it's about to do and lets you confirm before making any changes.",
     code: "$ git converse \"Create a new branch from main and switch to it\"\n\n> I'll create a new branch from 'main' and check it out.\n> Branch name? feature/user-auth\n\n> Created branch 'feature/user-auth' from 'main'\n> Switched to branch 'feature/user-auth'",
   },
   {
@@ -37,7 +37,7 @@ export default function HowItWorks() {
             How It Works
           </h2>
           <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto">
-            GitConverse simplifies complex Git operations into a natural, intuitive workflow.
+            MCPVerse simplifies complex Git operations into a natural, intuitive workflow.
           </p>
         </div>
 
@@ -97,7 +97,7 @@ export default function HowItWorks() {
                     <div className="w-3 h-3 rounded-full bg-green-500"></div>
                   </div>
                   <div className="text-xs text-gray-400 font-mono mx-auto">
-                    Terminal - GitConverse
+                    Terminal - MCPVerse
                   </div>
                 </div>
                 {/* Terminal content */}
