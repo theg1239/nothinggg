@@ -49,11 +49,8 @@ export default function Applications() {
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {applications.map((app, index) => (
-            <div
-              key={index}
-              className="flex flex-col rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-950"
-            >
-              <div className="mb-4 rounded-full bg-teal-100 p-3 dark:bg-teal-900/30">{app.icon}</div>
+            <div key={index} className="flex flex-col p-6">
+              <div className="mb-4">{app.icon}</div>
               <h3 className="mb-2 text-xl font-bold">{app.title}</h3>
               <p className="text-gray-600 dark:text-gray-400">{app.description}</p>
             </div>
