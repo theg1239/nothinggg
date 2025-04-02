@@ -19,11 +19,10 @@ export default function Hero() {
                 <span className="text-gray-700 dark:text-gray-300">Introducing MCPVerse MCP</span>
               </div>
               <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
-                Git Commands in <span className="text-teal-600 dark:text-teal-500">Plain English</span>
+                  Use tools <span className="text-teal-600 dark:text-teal-500">with just words</span>
               </h1>
               <p className="max-w-[600px] text-gray-600 dark:text-gray-400 md:text-xl">
-                MCPVerse translates natural language into Git operations, visualizes repository history, and scales
-                across multiple applications with our innovative MCP architecture.
+                  Describe your task in simple language. We instantly find, verify, and execute the perfect tools, all secured by MCP, so you work faster without manual setup.
               </p>
             </div>
             <div className="flex flex-col gap-4 sm:flex-row">
@@ -31,14 +30,11 @@ export default function Hero() {
                 Start Chatting Now
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <Button size="lg" variant="outline">
-                Watch Demo
-              </Button>
             </div>
             <div className="flex items-center space-x-4 text-sm">
               <div className="flex items-center">
                 <div className="mr-2 h-1 w-1 rounded-full bg-teal-600"></div>
-                <span className="text-gray-600 dark:text-gray-400">No Git expertise required</span>
+                <span className="text-gray-600 dark:text-gray-400">No more expertise required</span>
               </div>
               <div className="flex items-center">
                 <div className="mr-2 h-1 w-1 rounded-full bg-teal-600"></div>
@@ -69,9 +65,9 @@ export default function Hero() {
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-100 dark:bg-teal-900">
-                    <GitBranch className="h-4 w-4 text-teal-700 dark:text-teal-300" />
-                  </div>
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700">
+                    <img src="/favicon.svg" alt="logo" className="h-5 w-5" />
+                    </div>
                   <div className="rounded-lg rounded-tl-none bg-teal-100 p-3 dark:bg-teal-900/50">
                     <p className="text-sm text-teal-800 dark:text-teal-200">
                       Here are the last 5 commits on main:
@@ -101,7 +97,9 @@ export default function Hero() {
                 </div>
                 <div className="flex items-start space-x-3">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-100 dark:bg-teal-900">
-                    <GitPullRequest className="h-4 w-4 text-teal-700 dark:text-teal-300" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0f3751] dark:bg-gray-700">
+                    <img src="/favicon.svg" alt="logo" className="h-5 w-5" />
+                    </div>
                   </div>
                   <div className="rounded-lg rounded-tl-none bg-teal-100 p-3 dark:bg-teal-900/50">
                     <p className="text-sm text-teal-800 dark:text-teal-200">
