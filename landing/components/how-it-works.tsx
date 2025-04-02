@@ -10,7 +10,7 @@ const steps = [
     code: "$ git converse connect my-awesome-project",
   },
   {
-    title: "Ask questions in plain English",
+    title: "Ask questions in simple language",
     description: "Simply type what you want to do in natural language. No need to remember Git commands.",
     code: "$ git converse \"Show me all commits by Sarah from last week\"",
   },
@@ -37,7 +37,7 @@ export default function HowItWorks() {
             How It Works
           </h2>
           <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto">
-            MCPVerse simplifies complex Git operations into a natural, intuitive workflow.
+            For now, MCPVerse simplifies complex Git operations into a natural, intuitive workflow.
           </p>
         </div>
 
