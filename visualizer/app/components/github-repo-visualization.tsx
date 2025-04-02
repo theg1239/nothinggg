@@ -61,6 +61,22 @@ const CAMERA_PRESETS = {
   contributors: { position: new THREE.Vector3(SIDE_VIS_X_OFFSET + 20, 20, -20), target: new THREE.Vector3(SIDE_VIS_X_OFFSET, 5, SIDE_VIS_Z_POSITION) },
   trainPOV: { position: new THREE.Vector3(0, 0, 0), target: new THREE.Vector3(0, 0, 0) } // Placeholder, will be set dynamically
 }
+
+// Branch structure constants
+const MAIN_BRANCH_RADIUS = 18       // Main branch follows a more gentle curved path
+const BRANCH_OFFSET_Y = 3           // Vertical space between branches
+const BRANCH_FORK_DISTANCE = 10     // How far branches extend from main
+const BRANCH_CURVE_TENSION = 0.5    // How curved branch connections appear
+const COMMIT_SPACING = 3            // Space between commits on same branch
+const PR_ARROW_SIZE = 1.5           // Size of PR merge arrows
+const BRANCH_COLORS = {
+  main: 0x4285f4,                   // Google blue
+  feature: 0x0f9d58,                // Google green
+  bugfix: 0xdb4437,                 // Google red
+  release: 0xf4b400,                // Google yellow
+  other: 0x9e9e9e                   // Gray for other branches
+}
+
 // Visual Effects
 const PARTICLE_COUNT = 200
 const TIME_RIBBON_WIDTH = 1
@@ -516,36 +532,503 @@ export default function GitHubRepoVisualization({ repoData }: GitHubRepoVisualiz
     createTimelineSlider()
   }
 
-  // Create commit graph - simplified version
+  // Create commit graph - enhanced with branch visualization
   const createCommitGraph = (commits: Commit[]) => {
     const group = new THREE.Group()
     const commitObjects: Record<string, CommitObject> = {}
-
+    
     // Sort commits by date
     const sortedCommits = [...commits].sort(
       (a, b) => new Date(a.commit.author.date).getTime() - new Date(b.commit.author.date).getTime(),
     )
-
-    // Create ribbon points
-    const ribbonPoints: THREE.Vector3[] = []
-    const totalCommits = sortedCommits.length
     
-    for (let i = 0; i <= totalCommits; i++) {
-      const t = i / totalCommits
-      const angle = (t * totalCommits / COMMITS_PER_LOOP) * Math.PI * 2
-      const x = HELIX_RADIUS * Math.cos(angle)
-      const z = HELIX_RADIUS * Math.sin(angle)
-      const y = HELIX_START_Y + (t * totalCommits / COMMITS_PER_LOOP) * HELIX_PITCH
+    // Process branch information
+    const branchMap: Record<string, string[]> = {} // Maps branch names to commit SHAs
+    const commitBranchMap: Record<string, string> = {} // Maps commit SHAs to branch names
+    
+    // Identify branches from commit data and merge relationships
+    const commitChildren: Record<string, string[]> = {} // Each commit's children
+    const processedCommits = new Set<string>()
+    
+    // Set up parent-child relationships
+    sortedCommits.forEach(commit => {
+      commit.parents.forEach(parent => {
+        const parentSha = parent.sha
+        if (!commitChildren[parentSha]) {
+          commitChildren[parentSha] = []
+        }
+        commitChildren[parentSha].push(commit.sha)
+      })
+    })
+    
+    // Add the main branch (master/main) first
+    let mainBranchName = "main"
+    // Function to get branch type
+    const getBranchType = (name: string): string => {
+      name = name.toLowerCase()
+      if (name.includes('master') || name.includes('main')) return 'main'
+      if (name.includes('feature')) return 'feature'
+      if (name.includes('fix') || name.includes('bug')) return 'bugfix'
+      if (name.includes('release') || name.includes('version')) return 'release'
+      return 'other'
+    }
+  
+    // Create ribbon points following a more natural curved path, not strict spiral
+    const mainCommits: Commit[] = []
+    const branchCommits: Record<string, Commit[]> = {}
+    
+    // First pass: Identify main branch and create branch structure
+    let branchCounter = 0
+    sortedCommits.forEach(commit => {
+      // If it's a merge commit
+      if (commit.parents.length > 1) {
+        // Store both branches for this commit
+        const mergeCommit = commit.sha
+        for (let i = 1; i < commit.parents.length; i++) {
+          const sourceBranch = `branch_${branchCounter++}`
+          branchCommits[sourceBranch] = []
+          
+          // Follow the non-main parent backward to find the branch
+          let current = commit.parents[i].sha
+          let counter = 0
+          const maxSteps = 50 // Prevent infinite loops
+          
+          while (current && counter < maxSteps) {
+            const matchedCommit = sortedCommits.find(c => c.sha === current)
+            if (!matchedCommit) break
+            
+            // Add this commit to the branch
+            branchCommits[sourceBranch].unshift(matchedCommit)
+            commitBranchMap[matchedCommit.sha] = sourceBranch
+            
+            // Stop if this is a merge point or has multiple children
+            if (matchedCommit.parents.length > 1 || 
+                (commitChildren[matchedCommit.sha] && commitChildren[matchedCommit.sha].length > 1)) {
+              break
+            }
+            
+            // Move to parent
+            if (matchedCommit.parents.length > 0) {
+              current = matchedCommit.parents[0].sha
+            } else {
+              break
+            }
+            counter++
+          }
+        }
+      }
+    })
+    
+    // Process remaining commits for main branch
+    sortedCommits.forEach(commit => {
+      if (!commitBranchMap[commit.sha]) {
+        mainCommits.push(commit)
+        commitBranchMap[commit.sha] = mainBranchName
+      }
+    })
+    
+    // Create positions for main branch commits following a curved path
+    const mainPoints: THREE.Vector3[] = []
+    mainCommits.forEach((commit, i) => {
+      const t = i / Math.max(1, mainCommits.length - 1)
+      const angle = t * Math.PI * 1.5 // 3/4 of a circle
+      const x = MAIN_BRANCH_RADIUS * Math.cos(angle)
+      const z = MAIN_BRANCH_RADIUS * Math.sin(angle)
+      const y = HELIX_START_Y + i * COMMIT_SPACING * 0.5 // Gentle rise
       
-      ribbonPoints.push(new THREE.Vector3(x, y, z))
+      mainPoints.push(new THREE.Vector3(x, y, z))
+    })
+    
+    // Create a curve for the main branch
+    const mainCurve = new THREE.CatmullRomCurve3(mainPoints)
+    
+    // Create commit objects and position them
+    const positionCommit = (commit: Commit, index: number, branchName: string, isMainBranch: boolean) => {
+      const authorLogin = commit.author?.login || null
+      const color = contributorColorsRef.current[authorLogin || "null"] || contributorColorsRef.current["null"]
+      
+      // Create commit mesh
+      const commitSphereGeo = new THREE.SphereGeometry(COMMIT_RADIUS, 16, 16)
+      const material = new THREE.MeshStandardMaterial({ 
+        color: color, 
+        metalness: 0.6, 
+        roughness: 0.3,
+        emissive: new THREE.Color(color).multiplyScalar(0.1)
+      })
+      
+      const mesh = new THREE.Mesh(commitSphereGeo, material)
+      
+      // Determine position based on branch
+      let position: THREE.Vector3
+      if (isMainBranch) {
+        // Position on main branch curve
+        const t = index / Math.max(1, mainCommits.length - 1)
+        position = mainCurve.getPointAt(t)
+      } else {
+        // Position on feature branch curve
+        const branchArray = branchCommits[branchName]
+        const branchIndex = branchArray.findIndex(c => c.sha === commit.sha)
+        const branchProgress = branchIndex / Math.max(1, branchArray.length - 1)
+        
+        // Find merge point into main branch
+        let mainTarget: THREE.Vector3 | null = null
+        let foundTargetTime = 0
+        
+        // Try to find where this branch reconnects to main (if it does)
+        if (branchIndex === branchArray.length - 1) {
+          // This is the last commit on branch, check if it's merged to main
+          const children = commitChildren[commit.sha] || []
+          for (const child of children) {
+            if (commitBranchMap[child] === mainBranchName) {
+              // Find position in main curve
+              const targetCommit = mainCommits.findIndex(c => c.sha === child)
+              if (targetCommit >= 0) {
+                foundTargetTime = targetCommit / Math.max(1, mainCommits.length - 1)
+                mainTarget = mainCurve.getPointAt(foundTargetTime)
+              }
+              break
+            }
+          }
+        }
+        
+        // Find branch origin
+        let originPoint: THREE.Vector3 | null = null
+        let originTime = 0
+        
+        // Get first commit in branch and find its parent on main
+        const firstCommit = branchArray[0]
+        if (firstCommit && firstCommit.parents.length > 0) {
+          const parentSha = firstCommit.parents[0].sha
+          const parentIndex = mainCommits.findIndex(c => c.sha === parentSha)
+          if (parentIndex >= 0) {
+            originTime = parentIndex / Math.max(1, mainCommits.length - 1)
+            originPoint = mainCurve.getPointAt(originTime)
+          }
+        }
+        
+        // If we can't find exact points, estimate
+        if (!originPoint) {
+          originTime = 0.3 + (branchCounter % 3) * 0.2 // Spread branches along main
+          originPoint = mainCurve.getPointAt(originTime)
+        }
+        
+        if (!mainTarget) {
+          foundTargetTime = originTime + 0.2 // Default offset if no merge found
+          mainTarget = mainCurve.getPointAt(foundTargetTime)
+        }
+        
+        // Create branch path with offset from main
+        // Use the branch type to determine direction of branch offset
+        const branchType = getBranchType(branchName)
+        const branchTypeIndex = ['main', 'feature', 'bugfix', 'release', 'other'].indexOf(branchType)
+        
+        // Create a controlled random angle for this branch
+        const branchAngle = (branchTypeIndex / 5) * Math.PI * 2 + 
+                            (branchCounter % 3) * Math.PI / 6
+                            
+        // Calculate offset direction
+        const offsetX = Math.cos(branchAngle) * BRANCH_FORK_DISTANCE
+        const offsetZ = Math.sin(branchAngle) * BRANCH_FORK_DISTANCE
+        
+        // Create offset points for this branch
+        const branchOffset = new THREE.Vector3(offsetX, BRANCH_OFFSET_Y * (branchCounter % 3), offsetZ)
+        
+        // Calculate position along branch
+        position = new THREE.Vector3().copy(originPoint)
+        position.add(branchOffset.clone().multiplyScalar(branchProgress))
+      }
+      
+      // Apply scaling based on significance
+      const isMerge = commit.parents.length > 1
+      const isSignificant = commit.commit.message.toLowerCase().includes('release') || 
+                           commit.commit.message.toLowerCase().includes('version') ||
+                           commit.commit.message.toLowerCase().includes('milestone')
+      
+      let scale = 1.0
+      if (isMerge) scale *= 1.5
+      if (isSignificant) scale *= 1.8
+      
+      mesh.scale.set(scale, scale, scale)
+      mesh.position.copy(position)
+      
+      // Special visual for merge commits
+      if (isMerge) {
+        // Add merge indicator (cone pointing to merge direction)
+        const mergeArrow = createMergeIndicator(commit, color)
+        if (mergeArrow) {
+          mergeArrow.position.copy(position)
+          group.add(mergeArrow)
+        }
+      }
+      
+      // Store metadata
+      mesh.userData = {
+        type: "commit",
+        sha: commit.sha,
+        message: commit.commit.message,
+        author: authorLogin || "Unknown",
+        date: new Date(commit.commit.author.date).toLocaleString(),
+        url: commit.html_url,
+        parents: commit.parents.map((p) => p.sha),
+        isSignificant,
+        isMerge,
+        branch: branchName,
+        branchType: getBranchType(branchName),
+        index
+      }
+      
+      commitObjects[commit.sha] = { 
+        mesh, 
+        data: commit,
+        position
+      }
+      
+      group.add(mesh)
+      return position
     }
     
-    // Create curve and tube
-    const ribbonCurve = new THREE.CatmullRomCurve3(ribbonPoints)
+    // Create a merge indicator for pull requests
+    const createMergeIndicator = (commit: Commit, color: THREE.Color) => {
+      if (commit.parents.length <= 1) return null
+      
+      // Create a group for the merge indicator
+      const mergeGroup = new THREE.Group()
+      
+      // Create a ring to show merge
+      const mergeRing = new THREE.Mesh(
+        new THREE.TorusGeometry(COMMIT_RADIUS * 1.8, COMMIT_RADIUS * 0.3, 16, 32),
+        new THREE.MeshStandardMaterial({
+          color: color,
+          emissive: color.clone().multiplyScalar(0.3),
+          metalness: 0.7,
+          roughness: 0.2,
+          transparent: true,
+          opacity: 0.9
+        })
+      )
+      
+      // Orient the ring in XY plane
+      mergeRing.rotation.x = Math.PI / 2
+      mergeGroup.add(mergeRing)
+      
+      // Add small cones to indicate merge direction for each parent
+      for (let i = 1; i < commit.parents.length; i++) {
+        const arrowCone = new THREE.Mesh(
+          new THREE.ConeGeometry(PR_ARROW_SIZE * 0.5, PR_ARROW_SIZE, 8),
+          new THREE.MeshStandardMaterial({
+            color: 0xFFFFFF,
+            emissive: 0xFFFFFF,
+            emissiveIntensity: 0.3
+          })
+        )
+        
+        // Position around the ring
+        const angle = (i / commit.parents.length) * Math.PI * 2
+        arrowCone.position.set(
+          Math.cos(angle) * COMMIT_RADIUS * 2.5,
+          Math.sin(angle) * COMMIT_RADIUS * 2.5,
+          0
+        )
+        
+        // Orient toward center
+        arrowCone.lookAt(new THREE.Vector3(0, 0, 0))
+        arrowCone.rotateX(Math.PI / 2)
+        
+        mergeGroup.add(arrowCone)
+      }
+      
+      return mergeGroup
+    }
+    
+    // Position all commits
+    mainCommits.forEach((commit, index) => {
+      positionCommit(commit, index, mainBranchName, true)
+    })
+    
+    Object.entries(branchCommits).forEach(([branchName, commits]) => {
+      commits.forEach((commit, index) => {
+        positionCommit(commit, index, branchName, false)
+      })
+    })
+    
+    // Create branch lines with appropriate colors
+    const createBranchLines = () => {
+      // 1. Create main branch line
+      if (mainPoints.length > 1) {
+        const mainLineGeometry = new THREE.BufferGeometry().setFromPoints(mainPoints)
+        const mainLineMaterial = new THREE.LineBasicMaterial({
+          color: BRANCH_COLORS.main,
+          linewidth: 2,
+          opacity: 0.7,
+          transparent: true
+        })
+        
+        const mainLine = new THREE.Line(mainLineGeometry, mainLineMaterial)
+        group.add(mainLine)
+      }
+      
+      // 2. Create branch lines
+      Object.entries(branchCommits).forEach(([branchName, commits]) => {
+        if (commits.length === 0) return
+        
+        const branchType = getBranchType(branchName)
+        const branchColor = BRANCH_COLORS[branchType as keyof typeof BRANCH_COLORS] || BRANCH_COLORS.other
+        
+        // Create points for branch path
+        const points: THREE.Vector3[] = []
+        
+        // Get origin point (parent of first commit in branch)
+        const firstCommit = commits[0]
+        let originPosition: THREE.Vector3 | null = null
+        
+        if (firstCommit && firstCommit.parents.length > 0) {
+          const parentSha = firstCommit.parents[0].sha
+          const parentObj = commitObjects[parentSha]
+          if (parentObj) {
+            originPosition = parentObj.position.clone()
+            points.push(originPosition)
+          }
+        }
+        
+        // Add positions for all commits on this branch
+        commits.forEach(commit => {
+          const commitObj = commitObjects[commit.sha]
+          if (commitObj) {
+            points.push(commitObj.position.clone())
+          }
+        })
+        
+        // If this branch ended in a merge, add the target position
+        const lastCommit = commits[commits.length - 1]
+        if (lastCommit) {
+          const children = commitChildren[lastCommit.sha] || []
+          for (const childSha of children) {
+            const childObj = commitObjects[childSha]
+            if (childObj && commitBranchMap[childSha] === mainBranchName) {
+              points.push(childObj.position.clone())
+              break
+            }
+          }
+        }
+        
+        // Create branch line if we have at least 2 points
+        if (points.length >= 2) {
+          const branchCurve = new THREE.CatmullRomCurve3(points)
+          const curvePoints = branchCurve.getPoints(Math.max(20, points.length * 5))
+          
+          const branchGeometry = new THREE.BufferGeometry().setFromPoints(curvePoints)
+          const branchMaterial = new THREE.LineBasicMaterial({
+            color: branchColor,
+            opacity: 0.7,
+            transparent: true,
+            linewidth: 1
+          })
+          
+          const branchLine = new THREE.Line(branchGeometry, branchMaterial)
+          group.add(branchLine)
+        }
+      })
+    }
+    
+    // Create connections between parent-child commits
+    const createConnections = () => {
+      // Limit connections for performance
+      const maxConnections = Math.min(300, sortedCommits.length * 1.5)
+      let connectionCount = 0
+      
+      // Parent-child connections for richer visualization (especially across branches)
+      sortedCommits.forEach(commit => {
+        if (connectionCount >= maxConnections) return
+        
+        // For each parent, create connections
+        commit.parents.forEach((parentInfo, parentIndex) => {
+          if (connectionCount >= maxConnections) return
+          
+          const parentObj = commitObjects[parentInfo.sha]
+          const commitObj = commitObjects[commit.sha]
+          
+          if (parentObj && commitObj) {
+            // Don't create duplicates of branch lines
+            const parentBranch = commitBranchMap[parentInfo.sha]
+            const commitBranch = commitBranchMap[commit.sha]
+            
+            // Skip if both on same branch and it's a direct relationship
+            // This avoids duplicating branch line visuals
+            if (parentBranch === commitBranch && parentIndex === 0) {
+              return
+            }
+            
+            // Create special connections for PR merges
+            const isMerge = commit.parents.length > 1 && parentIndex > 0
+            
+            // Points for the connection
+            let points: THREE.Vector3[]
+            
+            if (isMerge) {
+              // Create a curved spline for PR connections
+              const midPoint = new THREE.Vector3().addVectors(
+                parentObj.position, commitObj.position
+              ).multiplyScalar(0.5)
+              
+              // Add some height for better visual
+              const offset = new THREE.Vector3(
+                (Math.random() - 0.5) * 5,
+                5 + Math.random() * 3,
+                (Math.random() - 0.5) * 5
+              )
+              midPoint.add(offset)
+              
+              // Create curve with control point
+              const curve = new THREE.QuadraticBezierCurve3(
+                parentObj.position.clone(),
+                midPoint,
+                commitObj.position.clone()
+              )
+              
+              points = curve.getPoints(20)
+            } else {
+              // Simple straight line for non-merge connections
+              points = [parentObj.position.clone(), commitObj.position.clone()]
+            }
+            
+            // Create the line
+            const lineGeometry = new THREE.BufferGeometry().setFromPoints(points)
+            const lineColor = isMerge ? 0x9966ff : 0x666666
+            const lineMaterial = new THREE.LineBasicMaterial({
+              color: lineColor, 
+              transparent: true,
+              opacity: isMerge ? 0.6 : 0.3,
+              linewidth: isMerge ? 2 : 1
+            })
+            
+            const line = isMerge ? 
+              new THREE.Line(lineGeometry, lineMaterial) : 
+              new THREE.Line(lineGeometry, lineMaterial)
+              
+            group.add(line)
+            connectionCount++
+          }
+        })
+      })
+    }
+    
+    // Create visual elements
+    createBranchLines()
+    createConnections()
+    
+    // Create a curve for the time train to follow
+    // We'll use main branch points plus any merged branches
+    const timelinePoints: THREE.Vector3[] = [...mainPoints]
+    
+    // Sort timeline points by height for smoother navigation
+    timelinePoints.sort((a, b) => a.y - b.y)
+    
+    // Create the time ribbon curve
+    const ribbonCurve = new THREE.CatmullRomCurve3(timelinePoints)
     timeRibbonCurveRef.current = ribbonCurve
     
-    // Use appropriate detail level based on commit count
-    const ribbonDetail = Math.min(totalCommits, 100)
+    // Create timeline ribbon
+    const ribbonDetail = Math.min(timelinePoints.length, 100)
     const ribbonGeometry = new THREE.TubeGeometry(
       ribbonCurve, 
       ribbonDetail, 
@@ -568,134 +1051,7 @@ export default function GitHubRepoVisualization({ repoData }: GitHubRepoVisualiz
     timeRibbon.receiveShadow = true
     group.add(timeRibbon)
     timeRibbonRef.current = timeRibbon
-
-    // For large repos, limit visible commits
-    const maxVisibleCommits = Math.min(sortedCommits.length, 200)
-    const visibleCommits = sortedCommits.length <= maxVisibleCommits 
-      ? sortedCommits 
-      : sortedCommits.filter((commit, i) => {
-          // Keep important commits and sample others
-          return commit.parents.length > 1 || // Keep all merge commits
-                 i === 0 || // Keep first commit
-                 i === sortedCommits.length - 1 || // Keep last commit
-                 i % Math.ceil(sortedCommits.length / maxVisibleCommits) === 0 // Sample others
-        })
-
-    // Create commit spheres
-    const commitSphereGeo = new THREE.SphereGeometry(COMMIT_RADIUS, 16, 16)
-    const commitDates = sortedCommits.map(c => new Date(c.commit.author.date).getTime())
-    const timeRange = Math.max(...commitDates) - Math.min(...commitDates)
-    
-    visibleCommits.forEach((commitData) => {
-      const authorLogin = commitData.author?.login || null
-      const color = contributorColorsRef.current[authorLogin || "null"] || contributorColorsRef.current["null"]
-      
-      // Create commit mesh
-      const material = new THREE.MeshStandardMaterial({ 
-        color: color, 
-        metalness: 0.6, 
-        roughness: 0.3,
-        emissive: new THREE.Color(color).multiplyScalar(0.1)
-      })
-      
-      const mesh = new THREE.Mesh(commitSphereGeo, material)
-      
-      // Calculate position
-      const index = sortedCommits.indexOf(commitData)
-      const normalizedIndex = index / sortedCommits.length
-      const angle = (normalizedIndex * totalCommits / COMMITS_PER_LOOP) * Math.PI * 2
-      const xPos = HELIX_RADIUS * Math.cos(angle)
-      const zPos = HELIX_RADIUS * Math.sin(angle)
-      const yPos = HELIX_START_Y + (normalizedIndex * totalCommits / COMMITS_PER_LOOP) * HELIX_PITCH
-      
-      // Apply scaling and jitter
-      const isMerge = commitData.parents.length > 1
-      const commitTime = new Date(commitData.commit.author.date).getTime()
-      const commitAge = (commitTime - Math.min(...commitDates)) / timeRange
-      const isSignificant = commitData.commit.message.toLowerCase().includes('release') || 
-                           commitData.commit.message.toLowerCase().includes('version') ||
-                           commitData.commit.message.toLowerCase().includes('milestone')
-      
-      let scale = 1.0
-      if (isMerge) scale *= 1.3
-      if (isSignificant) scale *= 1.5
-      if (commitAge < 0.1) scale *= 1.2
-      
-      mesh.scale.set(scale, scale, scale)
-      
-      // Add jitter
-      const jitterFactor = isMerge ? 0.5 : 0.2
-      const jitter = new THREE.Vector3(
-        (Math.random() - 0.5) * jitterFactor,
-        (Math.random() - 0.5) * jitterFactor,
-        (Math.random() - 0.5) * jitterFactor
-      )
-      
-      const finalPosition = new THREE.Vector3(
-        xPos + jitter.x,
-        yPos + jitter.y,
-        zPos + jitter.z
-      )
-      
-      mesh.position.copy(finalPosition)
-      
-      // Store metadata
-      mesh.userData = {
-        type: "commit",
-        sha: commitData.sha,
-        message: commitData.commit.message,
-        author: authorLogin || "Unknown",
-        date: new Date(commitData.commit.author.date).toLocaleString(),
-        url: commitData.html_url,
-        parents: commitData.parents.map((p) => p.sha),
-        isSignificant,
-        isMerge,
-        index
-      }
-      
-      commitObjects[commitData.sha] = { 
-        mesh, 
-        data: commitData,
-        position: finalPosition
-      }
-      
-      group.add(mesh)
-    })
-
-    // Store commit objects
-    commitObjectsRef.current = commitObjects
-
-    // Add connections - limit count for performance
-    const maxConnections = Math.min(300, sortedCommits.length)
-    let connectionCount = 0
-    
-    Object.values(commitObjects).forEach((commitObj) => {
-      if (connectionCount >= maxConnections) return
-      
-      commitObj.data.parents.forEach((parentSha) => {
-        if (connectionCount >= maxConnections) return
-        
-        const parentObj = commitObjects[parentSha]
-        if (parentObj) {
-          const isMerge = commitObj.data.parents.length > 1
-          
-          // Create simple line for better performance
-          const points = [parentObj.position.clone(), commitObj.position.clone()]
-          const lineGeometry = new THREE.BufferGeometry().setFromPoints(points)
-          const lineColor = isMerge ? 0x9966ff : 0x666666
-          const lineMaterial = new THREE.LineBasicMaterial({
-            color: lineColor, 
-            transparent: true,
-            opacity: isMerge ? 0.5 : 0.3
-          })
-          
-          const line = new THREE.Line(lineGeometry, lineMaterial)
-          group.add(line)
-          connectionCount++
-        }
-      })
-    })
-
+  
     return group
   }
 
@@ -1794,25 +2150,8 @@ export default function GitHubRepoVisualization({ repoData }: GitHubRepoVisualiz
         maxWidth: '400px',
         textAlign: 'center',
         zIndex: '1001'
-      }}>
-        <h3>Visualization Error</h3>
-        <p>{error}</p>
-        <button 
-          onClick={() => window.location.reload()}
-          style={{
-            backgroundColor: 'white',
-            color: '#c81e1e',
-            border: 'none',
-            padding: '8px 16px',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            marginTop: '10px',
-            fontWeight: 'bold'
-          }}
-        >
-          Reload
-        </button>
-      </div>
+      }}></div>
+        
     );
   };
 
