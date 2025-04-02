@@ -1,4 +1,6 @@
+"use client"
 import { MessageSquare, GitBranch, Clock, Brain, Layers, Zap } from "lucide-react"
+import { useState } from "react"
 
 const features = [
   {
@@ -37,52 +39,57 @@ const features = [
 ]
 
 export default function Features() {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  
   return (
-    <section id="features" className="py-20 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 overflow-hidden">
-      <div className="container px-4 md:px-6 relative">
-        <div className="absolute top-0 right-0 -translate-y-1/4 w-96 h-96 bg-teal-300/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 translate-y-1/4 w-96 h-96 bg-blue-300/10 rounded-full blur-3xl"></div>
-        
-        <div className="mx-auto max-w-[58rem] text-center relative z-10">
-          <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl bg-clip-text text-transparent bg-gradient-to-r from-teal-500 to-blue-600 dark:from-teal-400 dark:to-blue-500">
+    <section id="features" className="py-24 bg-black text-white overflow-hidden">
+      <div className="container px-4 md:px-6 max-w-6xl mx-auto">
+        <div className="text-center mb-24">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-blue-500">
             Powerful Features for Modern Developers
           </h2>
-          <p className="mb-16 text-gray-600 dark:text-gray-400 md:text-xl">
+          <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto">
             GitConverse combines natural language processing with powerful visualization tools to make Git more
             accessible and insightful.
           </p>
         </div>
         
-        <div className="relative">
+        <div className="space-y-32">
           {features.map((feature, index) => (
             <div 
               key={index}
-              className={`
-                relative z-10 flex mb-12 md:mb-8 group
-                ${index % 2 === 0 ? 'md:ml-[5%]' : 'md:ml-[15%]'}
-                ${index % 3 === 0 ? 'md:w-[75%]' : index % 3 === 1 ? 'md:w-[70%]' : 'md:w-[65%]'}
-              `}
+              className={`relative flex flex-col md:flex-row items-center ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(null)}
             >
-              <div className="mr-6 relative">
-                <div className="p-3 rounded-xl bg-white dark:bg-gray-800 shadow-lg transform group-hover:scale-110 transition-all duration-300">
-                  {feature.icon}
+              {/* Feature icon/image area */}
+              <div className="w-full md:w-1/2 mb-8 md:mb-0 flex justify-center">
+                <div className={`relative transition-all duration-700 transform ${hoveredIndex === index ? 'scale-105' : 'scale-100'}`}>
+                  <div className="absolute inset-0 bg-gradient-to-r from-teal-500/20 to-blue-500/20 rounded-3xl blur-3xl opacity-70 -z-10"></div>
+                  <div className="bg-gray-900 p-12 rounded-2xl border border-gray-800 shadow-2xl">
+                    <div className="w-24 h-24 flex items-center justify-center bg-gradient-to-br from-teal-500/20 to-blue-500/20 rounded-2xl">
+                      {feature.icon}
+                    </div>
+                  </div>
                 </div>
-                <div className="h-full w-[1px] absolute top-16 left-1/2 bg-gradient-to-b from-teal-500 to-transparent"></div>
               </div>
               
-              <div className="flex-1 backdrop-blur-sm bg-white/50 dark:bg-gray-800/50 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm transform transition-all duration-300 hover:translate-x-1 hover:-translate-y-1 group-hover:shadow-xl">
-                <h3 className="mb-2 text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-500 to-blue-600 dark:from-teal-400 dark:to-blue-500">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  {feature.description}
-                </p>
-                <div className="absolute -bottom-2 -right-2 w-12 h-12 rounded-full bg-gradient-to-br from-teal-500 to-blue-600 opacity-0 group-hover:opacity-30 transition-opacity"></div>
+              {/* Feature text area */}
+              <div className={`w-full md:w-1/2 ${index % 2 === 0 ? 'md:pl-16' : 'md:pr-16'}`}>
+                <div className="h-px w-16 bg-gradient-to-r from-teal-500 to-blue-500 mb-6"></div>
+                <h3 className="text-2xl md:text-3xl font-bold mb-4 tracking-tight">{feature.title}</h3>
+                <p className="text-gray-400 text-lg leading-relaxed">{feature.description}</p>
+              </div>
+
+              {/* Subtle animated gradient accent */}
+              <div 
+                className="absolute -z-10 w-full h-full opacity-0 transition-opacity duration-500"
+                style={{ opacity: hoveredIndex === index ? 0.05 : 0 }}
+              >
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[150%] bg-gradient-to-r from-teal-500 to-blue-500 rounded-full blur-[100px]"></div>
               </div>
             </div>
           ))}
-          
-          <div className="absolute top-1/2 left-0 w-full h-1/2 bg-gradient-to-r from-teal-500/5 to-blue-600/5 -skew-y-6 -z-10"></div>
         </div>
       </div>
     </section>

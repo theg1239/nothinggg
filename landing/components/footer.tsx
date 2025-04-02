@@ -1,153 +1,131 @@
 import Link from "next/link"
-import { Github, Twitter, Linkedin } from "lucide-react"
+import { Github, Twitter, Linkedin, Mail } from "lucide-react"
 
 export default function Footer() {
   return (
-    <footer className="border-t border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950">
-      <div className="container px-4 py-12 md:px-6">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-          <div>
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="relative h-8 w-8 overflow-hidden rounded-full bg-gradient-to-br from-teal-400 to-teal-600">
-                <div className="absolute inset-1 rounded-full bg-white dark:bg-gray-900"></div>
-                <div className="absolute inset-2 rounded-full bg-gradient-to-br from-teal-400 to-teal-600"></div>
-              </div>
-              <span className="text-xl font-bold">GitConverse</span>
+    <footer className="bg-black text-white pt-16 pb-8 border-t border-gray-800">
+      <div className="container px-4 md:px-6 mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+          <div className="md:col-span-1">
+            <Link href="/" className="text-white font-bold text-2xl mb-6 inline-block">
+              GitConverse
             </Link>
-            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-              Making Git operations intuitive through natural language and visualization.
+            <p className="text-gray-400 mb-6">
+              Making Git collaboration simple, visual, and intuitive for modern development teams.
             </p>
-            <div className="mt-4 flex space-x-4">
-              <Link href="#" className="text-gray-600 hover:text-teal-600 dark:text-gray-400 dark:hover:text-teal-500">
-                <Github className="h-5 w-5" />
-                <span className="sr-only">GitHub</span>
-              </Link>
-              <Link href="#" className="text-gray-600 hover:text-teal-600 dark:text-gray-400 dark:hover:text-teal-500">
-                <Twitter className="h-5 w-5" />
-                <span className="sr-only">Twitter</span>
-              </Link>
-              <Link href="#" className="text-gray-600 hover:text-teal-600 dark:text-gray-400 dark:hover:text-teal-500">
-                <Linkedin className="h-5 w-5" />
-                <span className="sr-only">LinkedIn</span>
-              </Link>
+            <div className="flex space-x-4">
+              <a 
+                href="#" 
+                className="text-gray-400 hover:text-white transition-colors"
+                aria-label="GitHub"
+              >
+                <Github size={20} />
+              </a>
+              <a 
+                href="#" 
+                className="text-gray-400 hover:text-white transition-colors"
+                aria-label="Twitter"
+              >
+                <Twitter size={20} />
+              </a>
+              <a 
+                href="#" 
+                className="text-gray-400 hover:text-white transition-colors"
+                aria-label="LinkedIn"
+              >
+                <Linkedin size={20} />
+              </a>
+              <a 
+                href="#" 
+                className="text-gray-400 hover:text-white transition-colors"
+                aria-label="Email"
+              >
+                <Mail size={20} />
+              </a>
             </div>
           </div>
+          
           <div>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider">Product</h3>
-            <ul className="space-y-2">
+            <h3 className="font-medium text-lg mb-4">Product</h3>
+            <ul className="space-y-3">
               <li>
-                <Link
-                  href="#features"
-                  className="text-sm text-gray-600 hover:text-teal-600 dark:text-gray-400 dark:hover:text-teal-500"
-                >
+                <Link href="#features" className="text-gray-400 hover:text-white transition-colors">
                   Features
                 </Link>
               </li>
               <li>
-                <Link
-                  href="#"
-                  className="text-sm text-gray-600 hover:text-teal-600 dark:text-gray-400 dark:hover:text-teal-500"
-                >
-                  Integrations
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#pricing"
-                  className="text-sm text-gray-600 hover:text-teal-600 dark:text-gray-400 dark:hover:text-teal-500"
-                >
+                <Link href="#pricing" className="text-gray-400 hover:text-white transition-colors">
                   Pricing
                 </Link>
               </li>
               <li>
-                <Link
-                  href="#"
-                  className="text-sm text-gray-600 hover:text-teal-600 dark:text-gray-400 dark:hover:text-teal-500"
-                >
+                <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+                  Documentation
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+                  API
+                </Link>
+              </li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 className="font-medium text-lg mb-4">Resources</h3>
+            <ul className="space-y-3">
+              <li>
+                <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+                  Tutorials
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+                  Support
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="text-gray-400 hover:text-white transition-colors">
                   Changelog
                 </Link>
               </li>
             </ul>
           </div>
+          
           <div>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider">Resources</h3>
-            <ul className="space-y-2">
+            <h3 className="font-medium text-lg mb-4">Company</h3>
+            <ul className="space-y-3">
               <li>
-                <Link
-                  href="#"
-                  className="text-sm text-gray-600 hover:text-teal-600 dark:text-gray-400 dark:hover:text-teal-500"
-                >
-                  Documentation
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  className="text-sm text-gray-600 hover:text-teal-600 dark:text-gray-400 dark:hover:text-teal-500"
-                >
-                  API Reference
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  className="text-sm text-gray-600 hover:text-teal-600 dark:text-gray-400 dark:hover:text-teal-500"
-                >
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  className="text-sm text-gray-600 hover:text-teal-600 dark:text-gray-400 dark:hover:text-teal-500"
-                >
-                  Community
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider">Company</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  href="#"
-                  className="text-sm text-gray-600 hover:text-teal-600 dark:text-gray-400 dark:hover:text-teal-500"
-                >
+                <Link href="#" className="text-gray-400 hover:text-white transition-colors">
                   About
                 </Link>
               </li>
               <li>
-                <Link
-                  href="#"
-                  className="text-sm text-gray-600 hover:text-teal-600 dark:text-gray-400 dark:hover:text-teal-500"
-                >
+                <Link href="#" className="text-gray-400 hover:text-white transition-colors">
                   Careers
                 </Link>
               </li>
               <li>
-                <Link
-                  href="#"
-                  className="text-sm text-gray-600 hover:text-teal-600 dark:text-gray-400 dark:hover:text-teal-500"
-                >
-                  Contact
+                <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+                  Privacy
                 </Link>
               </li>
               <li>
-                <Link
-                  href="#"
-                  className="text-sm text-gray-600 hover:text-teal-600 dark:text-gray-400 dark:hover:text-teal-500"
-                >
-                  Privacy Policy
+                <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+                  Terms
                 </Link>
               </li>
             </ul>
           </div>
         </div>
-        <div className="mt-12 border-t border-gray-200 pt-8 dark:border-gray-800">
-          <p className="text-center text-xs text-gray-600 dark:text-gray-400">
-            &copy; {new Date().getFullYear()} GitConverse. All rights reserved.
-          </p>
+        
+        <div className="mt-16 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
+          <p>© {new Date().getFullYear()} GitConverse. All rights reserved.</p>
         </div>
       </div>
     </footer>
