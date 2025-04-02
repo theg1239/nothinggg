@@ -22,7 +22,7 @@ export default function CTA() {
   }
 
   return (
-    <section className="py-24 bg-black relative overflow-hidden">
+    <section className="py-24 relative overflow-hidden">
       {/* Background accents */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
         <div className="absolute top-1/3 left-1/4 w-1/2 h-1/2 rounded-full blur-[100px]"></div>

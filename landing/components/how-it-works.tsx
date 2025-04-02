@@ -30,7 +30,7 @@ export default function HowItWorks() {
   const [activeStep, setActiveStep] = useState(0)
 
   return (
-    <section id="how-it-works" className="py-24 bg-black text-white">
+    <section id="how-it-works" className="py-24 text-white">
       <div className="container px-4 md:px-6 mx-auto max-w-6xl">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-blue-500">
