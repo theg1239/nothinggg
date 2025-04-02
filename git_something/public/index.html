@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokymono MCP Dashboard</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+    .version {
+      font-size: 0.8em;
+      color: #666;
+    }
+    .tools {
+      margin-top: 20px;
+    }
+    .tool-item {
+      background: #f9f9f9;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      border-left: 4px solid #4CAF50;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Pokymono MCP Dashboard</h1>
+      <span class="version">Version 1.0.0</span>
+    </header>
+    
+    <div class="content">
+      <p>This dashboard provides an interface to the Pokymono MCP server with GitHub integration.</p>
+      
+      <div class="tools">
+        <h2>Available Tools</h2>
+        <div class="tool-item">
+          <h3>get_weather</h3>
+          <p>Get weather information for a city</p>
+        </div>
+        <div class="tool-item">
+          <h3>get_quote</h3>
+          <p>Generate a random inspirational quote</p>
+        </div>
+        <div class="tool-item">
+          <h3>github_search</h3>
+          <p>Search for repositories on GitHub</p>
+        </div>
+        <div class="tool-item">
+          <h3>github_create_issue</h3>
+          <p>Create an issue in a GitHub repository</p>
+        </div>
+        <!-- Additional GitHub tools would be listed here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // You can dynamically update the version from environment variables
+    // when served through your backend
+    document.addEventListener('DOMContentLoaded', () => {
+      // This would be replaced by actual version from your server
+      const versionElement = document.querySelector('.version');
+      fetch('/api/version')
+        .then(response => response.json())
+        .then(data => {
+          if (data.version) {
+            versionElement.textContent = `Version ${data.version}`;
+          }
+        })
+        .catch(err => console.error('Error fetching version:', err));
+    });
+  </script>
+</body>
+</html>
