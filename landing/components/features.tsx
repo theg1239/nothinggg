@@ -7,19 +7,19 @@ const features = [
     icon: <MessageSquare className="h-10 w-10 text-teal-600" />,
     title: "Natural Language Interface",
     description:
-      "Translate plain English commands into Git and GitHub API operations without memorizing complex syntax.",
+      "Translate plain language commands into operations without memorizing complex syntax or copy pasting.",
+  },
+  {
+    icon: <Brain className="h-10 w-10 text-teal-600" />,
+    title: "Context-Aware Operations",
+    description:
+      "MCP integration understands your query and structure before executing commands for smarter results.",
   },
   {
     icon: <Clock className="h-10 w-10 text-teal-600" />,
     title: "Time-lapse Visualization",
     description:
       "See your repository evolve over time with intuitive visualizations that make code history transparent.",
-  },
-  {
-    icon: <Brain className="h-10 w-10 text-teal-600" />,
-    title: "Context-Aware Operations",
-    description:
-      "MCP integration understands your repo history and structure before executing commands for smarter results.",
   },
   {
     icon: <GitBranch className="h-10 w-10 text-teal-600" />,
