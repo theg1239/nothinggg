@@ -18,35 +18,6 @@ export default function Header() {
           </div>
           <span className="text-xl font-bold">GitConverse</span>
         </Link>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex md:items-center md:space-x-6">
-          <Link
-            href="#features"
-            className="text-sm font-medium text-gray-600 hover:text-teal-600 dark:text-gray-300 dark:hover:text-teal-400"
-          >
-            Features
-          </Link>
-          <Link
-            href="#how-it-works"
-            className="text-sm font-medium text-gray-600 hover:text-teal-600 dark:text-gray-300 dark:hover:text-teal-400"
-          >
-            How It Works
-          </Link>
-          <Link
-            href="#applications"
-            className="text-sm font-medium text-gray-600 hover:text-teal-600 dark:text-gray-300 dark:hover:text-teal-400"
-          >
-            Applications
-          </Link>
-          <Link
-            href="#pricing"
-            className="text-sm font-medium text-gray-600 hover:text-teal-600 dark:text-gray-300 dark:hover:text-teal-400"
-          >
-            Pricing
-          </Link>
-        </nav>
-
         <div className="hidden md:flex md:items-center md:space-x-4">
           <Button variant="outline" size="sm">
             Log In
