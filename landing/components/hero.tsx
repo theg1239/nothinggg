@@ -10,9 +10,9 @@ export default function Hero() {
         <div className="absolute -bottom-[30%] -left-[10%] h-[600px] w-[600px] rounded-full bg-teal-100/20 blur-3xl dark:bg-teal-900/20"></div>
       </div>
 
-      <div className="container px-4 md:px-6">
+      <div className="container mx-auto max-w-7xl px-6 sm:px-8 md:px-12">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
-          <div className="flex flex-col justify-center space-y-8">
+          <div className="flex  flex-col justify-center space-y-8">
             <div className="space-y-6">
               <div className="inline-flex items-center rounded-full border border-gray-200 bg-white px-3 py-1 text-sm dark:border-gray-800 dark:bg-gray-950">
                 <span className="mr-1 rounded-full bg-teal-600 px-1.5 py-0.5 text-xs font-medium text-white">New</span>

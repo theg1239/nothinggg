@@ -9,8 +9,8 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md dark:border-gray-800 dark:bg-gray-950/80">
-      <div className="container flex h-16 items-center justify-between">
+    <header className="sticky top-4 z-50 mx-4 rounded-full border border-gray-200 bg-white/60 backdrop-blur-md dark:border-gray-800 dark:bg-gray-950/60">
+      <div className="container mx-auto max-w-7xl px-8 flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
           <img src="/logo.svg" alt="logo" className="h-8 w-8" />
           <span className="text-xl font-bold">MCPVerse</span>
